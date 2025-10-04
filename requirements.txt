@@ -1,0 +1,9 @@
+black==25.1.0
+boto3==1.37.2
+botocore==1.37.2
+flake8==7.1.2
+moto==5.1.0
+pytest==8.3.4
+PyYAML==6.0.2
+
+requests
