@@ -13,6 +13,6 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "exmaple" {
-  bucket = "hamzah-bucket"
+  bucket = "hamzah-bucket-new"
   
 }
