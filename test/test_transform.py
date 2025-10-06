@@ -4,22 +4,14 @@ from src.extract import extract
 from moto import mock_aws
 
 """
-TDD is actually a development methodology, not just a testing system. 
-It forces you to build incrementally and decide what you will write before writing.
-
-Testing the inputs & outputs of a function
-
 - Test that function returns a message when  empty string
 - test_extract_returns_a_dictionary_when_passed_a_string
 - Test search string, without date argument
 - Test search argument only accepts string - test other data types
 - Test String, with date argument - that it accepts the optional date
-- Test aws secret is listed
-- Test aws Secret is retrieved
-- Test aws secret is able to connect to the API
 - API request returns a response
 - API request returns records
-- Function returns a dictionary 
+- Function returns JSON file
 
 """
 def test_requests_returns_a_message_when_passed_an_empty_string():

@@ -6,16 +6,13 @@ import os
 """
 
 retrieves api key from secrets manager
-connects and retrieves api data
+connects and retrieves api data - all data or just the search data?
 Returns raw data as a dictionary
 """
 
-def extract():
-    # return {}
-
-    api_link = f"https://content.guardianapis.com/search?api-key=d1846387-ad97-4cf4-b9e4-3af7835f2b5f"
-    api = requests.get(api_link)
-
-    print(api.Response["results"])
-
-extract()
+def extract(search_term):
+    if not search_term:
+        return "Please provide a search term"
+    else:
+        return {}
+    pass
