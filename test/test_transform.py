@@ -4,14 +4,7 @@ from src.extract import extract
 from moto import mock_aws
 
 """
-- Test that function returns a message when  empty string
-- test_extract_returns_a_dictionary_when_passed_a_string
-- Test search string, without date argument
-- Test search argument only accepts string - test other data types
-- Test String, with date argument - that it accepts the optional date
-- API request returns a response
-- API request returns records
-- Function returns JSON file
+
 
 """
 def test_requests_returns_a_message_when_passed_an_empty_string():
