@@ -6,3 +6,4 @@ moto==5.1.0
 pytest==8.3.4
 PyYAML==6.0.2
 requests==2.32.5
+regex==2025.9.18

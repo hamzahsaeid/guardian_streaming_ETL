@@ -18,10 +18,7 @@ def get_secret(sm_client, secret_id: str):
     try:
         response = sm_client.get_secret_value(SecretId=secret_id)
         decoded = json.loads(response["SecretString"])
-        return decoded
+        return decoded['guardian-api']
     except ClientError as e:
         print(e)
         raise e
-
-   
-    

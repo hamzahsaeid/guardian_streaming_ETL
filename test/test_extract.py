@@ -14,19 +14,13 @@ It forces you to build incrementally and decide what you will write before writi
 Testing the inputs & outputs of a function
 
 
-- Test extract returns a message when empty string
-- Test search argument only accepts string - test other data types
 - test_extract_returns_a_dictionary_when_passed_a_string
-- test extract accepts single word string
-- test extract handles muti-word string
 - Test search argument only accepts string - test other data types
-- Test search string, without date argument
+
 - Test String, with date argument - that it accepts the optional date
 - API request returns a response
 - API request returns 10 records
 - Function returns JSON file
-
-
 """
 
 @pytest.fixture(scope="function", autouse=True)
@@ -37,14 +31,8 @@ def aws_credentials(): # credentials required for testing
     os.environ["AWS_SESSION_TOKEN"] = "testing"
     os.environ["AWS_DEFAULT_REGION"] = "eu-north-1"
 
-def test_extract_returns_a_dictionary_when_passed_a_string():
-    # Arrange
-    input = ''
-    # Act
-    result = extract(input)
-    # Assert
-    assert result == {}
-    print(result, '<<<<<<<<<<<<<<<<<<<<<<')
+
+
 def test_extract_returns_a_dictionary_when_passed_a_string():
     # Arrange
     input = 'hello'
@@ -72,3 +60,12 @@ def test_extract_only_accepts_string_as_input_data_type():
     assert result3 == "Please input a string"
     assert result4 == "Please input a string"
     assert result5 == "Please input a string"
+    
+def test_extract_accepts_optional_date_argument():
+    # Arrange
+    input = "hello world"
+    date_from = "2025-01-01"
+    # Act
+    result = extract(input, date_from)
+    # Assert
+    assert result == 

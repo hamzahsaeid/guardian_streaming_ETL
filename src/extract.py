@@ -1,24 +1,41 @@
-import requests
-import json
 import boto3
 import os
 from botocore.exceptions import ClientError
 
-def extract(search_term: str):
+from utils.extract_search_date import url_string
+from src.utils.get_secret import get_secret
+
+def extract(search_term: str, date_from=None):
     """
-    Checks for updates in the Guardian API and extracts the new data
+    This function searches the Guardian API and extracts the new data
     retrieves api key from secrets manager
-    connects and retrieves api data - all data or just the search data?
+    connects and retrieves api data - returns the search data?
     Returns raw data as a dictionary
     """
 
-    """
-    - Create SM client
-    - Connect to API
-    """
+     # secret name
+    secret_name = 'guardian-api'
+    region_name = 'eu-north-1'
 
- 
-    if not search_term or not type(search_term) == str:
-        return "Please input a string"
-    else:
+    # Create Secrets Manager Client
+    session = boto3.session.Session()
+    client = session.client(
+        service_name="secretsmanager", region_name=region_name
+    )
+    # Retrieve Secret
+    key_retrieval = get_secret(client, secret_name)
+
+    # retrieve URL substring
+    url_string_retrieval = url_string(search_term, date_from)
+
+    
+    guardian_url = f"https://content.guardianapis.com/search?{url_string_retrieval}&api-key={key_retrieval}"
+
+    guardian_request = requests.get(guardian_url)
+    
+    if type(search_term) == str:     
         return {}
+    else:
+        return 'Please input a string'
+    
+extract("hello world")
