@@ -1,47 +1,39 @@
 import pytest
-import boto3
-from botocore.exceptions import ClientError
-from moto import mock_aws
-import os
+import requests_new
+from unittest.mock import patch
 
 from src.extract import extract
 
-
 """
-TDD is actually a development methodology, not just a testing system. 
-It forces you to build incrementally and decide what you will write before writing.
-
-Testing the inputs & outputs of a function
-
-
-- test_extract_returns_a_dictionary_when_passed_a_string
-- Test search argument only accepts string - test other data types
-
-- Test String, with date argument - that it accepts the optional date
-- API request returns a response
+- API request returns a response  
+- API handles failed response
 - API request returns 10 records
-- Function returns JSON file
 """
 
-@pytest.fixture(scope="function", autouse=True)
-def aws_credentials(): # credentials required for testing
-    os.environ["AWS_ACCESS_KEY_ID"] = "testing"
-    os.environ["AWS_SECRET_ACCESS_KEY"] = "testing"
-    os.environ["AWS_SECURITY_TOKEN"] = "testing"
-    os.environ["AWS_SESSION_TOKEN"] = "testing"
-    os.environ["AWS_DEFAULT_REGION"] = "eu-north-1"
+@pytest.fixture(autouse=True)
+def patch_external_services():
+    with patch("src.utils.get_secret.get_secret", return_value="fake_key"), \
+        patch("src.extract.requests.get") as mock_get:
+        mock_get.return_value.json.return_value = {
+            "response": {"results": [{"id": "abc", "webTitle": "test"}]}
+        }
+        mock_get.return_value.status_code = 200
+        yield mock_get
 
+def test_extract_function_requires_a_string_argument():
+    # Assert
+    with pytest.raises(TypeError):
+        extract()
 
-
-def test_extract_returns_a_dictionary_when_passed_a_string():
+def test_extract_returns_a_list_object_when_passed_a_string():
     # Arrange
     input = 'hello'
     # Act
     result = extract(input)
     # Assert
-    assert result == {}
+    assert type(result) == list
 
-def test_extract_only_accepts_string_as_input_data_type():
+def test_extract_only_accepts_string_as_input_data_type_for_search_term():
     # Arrange
     input1 = [1,2,3]
     input2 = 123
@@ -60,12 +52,33 @@ def test_extract_only_accepts_string_as_input_data_type():
     assert result3 == "Please input a string"
     assert result4 == "Please input a string"
     assert result5 == "Please input a string"
-    
-def test_extract_accepts_optional_date_argument():
+
+def test_extract_accepts_optional_date_argument(patch_external_services):
     # Arrange
     input = "hello world"
     date_from = "2025-01-01"
     # Act
     result = extract(input, date_from)
     # Assert
-    assert result == 
+    assert result == [{"id": "abc", "webTitle": "test"}]
+
+def test_url_string_requires_international_format_date_string_with_hypen_delimiter():
+    # Arrange
+    input = "super duper hello"
+    date_from = '01-01-2024'
+
+    # Act
+    result = extract(input,date_from)
+
+    # Assert
+    assert result == "Please enter date is correct format, as follows: YYYY-MM-DD"
+ 
+def test_extract_api_connection_returns_a_200_status_code(patch_external_services):
+    # Arrange
+    input = 'hello world'
+
+    # Act
+    result = extract(input)
+
+    # Assert
+    assert patch_external_services.return_value.status_code == 200
