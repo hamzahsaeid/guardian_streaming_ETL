@@ -11,8 +11,3 @@ terraform {
 provider "aws" {
     region = "eu-north-1"
 }
-
-resource "aws_s3_bucket" "exmaple" {
-  bucket = "hamzah-bucket-new"
-  
-}

@@ -8,7 +8,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-
+tmp/
 
 # terraform stuff
 deployment_files/*.zip

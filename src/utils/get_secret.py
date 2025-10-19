@@ -7,9 +7,9 @@ from botocore.exceptions import ClientError
 def get_secret(sm_client, secret_id: str):
     """Retrieves api key from AWS Secrets Manager
 
-    Input:
-        Secrets Manager client
-        Secret ID - secret ID that is stored in AWS Secrets Manager
+    Args:
+        sm_client: Secrets Manager client
+        secret_id: secret ID that is stored in AWS Secrets Manager
 
     Returns
         dictionary containing the secret string

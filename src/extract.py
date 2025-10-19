@@ -1,64 +1,68 @@
-import boto3
-import os
-from botocore.exceptions import ClientError
-import json
 import re
-
 import requests
+import logging
 
 from src.utils.get_secret import get_secret
 
-def extract(search_term: str, date_from=None):
-    """
-    This function searches the Guardian API and extracts the new data
-    retrieves api key from secrets manager
-    connects and retrieves api data - returns the search data?
-    Returns raw data as a dictionary
-    """
+def extract(sm_client, search_term: str, date_from=None):
+    """ Function retrieves records from the Guardian API
+     
+    Given a search term and "date from", retrieves relevant records from the API
+    It retrieves the API key from secrets manager
 
-     # secret name
+    Args:
+      search_term: the term that will be searched 
+      date_from: an optional date field
+
+    Returns: list of dictionaries containing returned filtered api data
+      
+    """
+    # logic to validate the search_term data type and validity
+    if not isinstance(search_term, str) or not search_term:
+        raise TypeError("Search Terms must be a non-empty string")
+        
+    # secret name
     secret_name = 'guardian-api'
-    region_name = 'eu-north-1'
     base_url = "https://content.guardianapis.com/search?"
 
-    # Create Secrets Manager Client
-    session = boto3.session.Session()
-    client = session.client(
-        service_name="secretsmanager", region_name=region_name
-    )
-
     # Retrieve Secret
-    key_retrieval = get_secret(client, secret_name)
+    key_retrieval = get_secret(sm_client, secret_name)
 
     params = {
         "q": f'"{search_term}"',
-        "page-size": 1,
-        "show-tags": "all",
+        "page-size": 10,
         "show-fields": "body",
         "api-key": key_retrieval
     }
     # Logic to add date_from parameter to the request params dictionary
     if date_from:
-            regex = re.compile("[0-9]{4}\-[0-9]{2}\-[0-9]{2}")
+            regex = re.compile(r"[0-9]{4}\-[0-9]{2}\-[0-9]{2}") 
             match = re.match(regex, date_from)
         
             if not (match):
-                return "Please enter date is correct format, as follows: YYYY-MM-DD"
+                raise TypeError("Date format should be as follows: YYYY-MM-DD")
             else:
                 params["from-date"]=date_from
 
-    if type(search_term) == str:
-    
-        response = requests.get("https://content.guardianapis.com/search?", params=params)    
-        
+    try:
+        response = requests.get("https://content.guardianapis.com/search?", params=params)
         data = response.json()
-
+        response.raise_for_status() # triggers the exceptions
         results = data.get('response', {}).get('results', [])
+        return results      
+    except requests.exceptions.HTTPError as errh:
+        logging.error("HTTP Error: %s", errh)
+        raise
+    except requests.exceptions.ConnectionError as errc:
+        logging.error("Connection Error: %s", errc)
+        raise
+    except requests.exceptions.Timeout as errt:
+        logging.error("Timeout Error: %s", errt)
+        raise
+    except requests.exceptions.RequestException as err:
+        logging.error("Something Else: %s", err)
+        raise
 
-        return results
-    else:
-        return 'Please input a string'
-    
 
 
     
