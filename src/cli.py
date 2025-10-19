@@ -31,10 +31,3 @@ def cli(search_term: str, kinesis_stream: str, date_from=None):
 
     # Call the load function with declared client, stream name and out of transform function 
     load(kenesis_client, kinesis_stream, transformed_data )
-    
-# if __name__== "__main__":
-#     search_term = 'sdfsdfsdfsdf'
-#     kinesis_stream = 'Guardian_content'
-#     date_from = '2020-01-01'
-
-#     cli(search_term, kinesis_stream, date_from)
