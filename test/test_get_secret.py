@@ -28,12 +28,12 @@ def test_get_secret_retrieves_valid_secret(aws_credentials):
             Name="guardian-api",
             SecretString='{"key": "guardian","value": "hello"}'
         )
-    # Act
-        expected_response = {'key': 'guardian','value': 'hello'}
+        # Act
+        expected_response = {"key": "guardian", "value": "hello"}
         result = get_secret(test_client, "guardian-api")
         # Assert
         assert result == expected_response
-    
+
 
 def test_extract_returns_a_dictionary_when_passed_a_string():
     # Arrange

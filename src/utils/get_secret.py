@@ -1,6 +1,5 @@
 import json
 import boto3
-import os
 from botocore.exceptions import ClientError
 
 
@@ -18,7 +17,7 @@ def get_secret(sm_client, secret_id: str):
     try:
         response = sm_client.get_secret_value(SecretId=secret_id)
         decoded = json.loads(response["SecretString"])
-        return decoded['guardian-api']
+        return decoded["guardian-api"]
     except ClientError as e:
         print(e)
         raise e
